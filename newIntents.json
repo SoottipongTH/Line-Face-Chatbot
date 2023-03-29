@@ -1,0 +1,10 @@
+{
+    "intents": [
+        {
+          "tag": "welcome",
+          "patterns": [ ""
+          ],
+          "context_filter":""
+        }
+    ]
+}

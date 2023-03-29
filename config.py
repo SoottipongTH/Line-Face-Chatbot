@@ -1,0 +1,8 @@
+#Facebook Config
+PAGE_ACCESS_TOKEN = "EAATYxoah5sYBAAGr25ulPhrMrP6WgLnvASNb9e8tdS4oGgWzIinYwndJtr3rbS6wOLF2tn4wopuedOifOCXvqaCGHvU9PPMnoFB3auF9stzMkTGgjphxrcsSWTnwFOzcmtnGKhkDovAP0C2ramV6ZBZBPXx7VvexomNHerBUC8Kn7iKv1C"
+VERIFY_TOKEN = "chatbotfacebook"
+
+
+#Line Config
+LINE_SECRET="d52bc3571ef24695e8fd5f51a3f14772"
+LINE_ACCESS_TOKEN = "9i++f51tGggvR3n/e4GHObixt+ki4Rk60GYOm5uGvxQOrH6vGdMH9irtFqX00Ep85/T9f2XyUN6V6+RCsFb7xcHfihXKAK/wAiEzKwxuCX0x53Db3eoMBfcxvGYHLkSRNokchjIajOp8FWnt2gA0XAdB04t89/1O/w1cDnyilFU="
