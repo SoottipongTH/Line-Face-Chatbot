@@ -20,17 +20,18 @@ def find_data(product_name):
 
 
 
-# json_file = open("product.json", 'r', encoding='utf-8')
-# json_data = json.load(json_file)
-# # for i in json_data['new-product']:
-# #     print(i['name'])
+json_file = open("product.json", 'r', encoding='utf-8')
+json_data = json.load(json_file)
+# for i in json_data['new-product']:
+#     print(i['name'])
 
 
-# def add_collection():
-#     for data in json_data['new-product']:
-#         db.collection('new-product').document(data['name'][0]).set(data)
+def add_collection():
+    for data in json_data['new-product']:
+        db.collection('new-product').document(data['name'][0]).set(data)
     
-# add_collection()
+add_collection()
 
 
 
+            

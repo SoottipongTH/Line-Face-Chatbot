@@ -41,6 +41,11 @@ def lineMsgAPI(reply_token, reply_message):
 
     return 'OK' , 200
 
+'''
+ชื่อสินค้า
+ขนาด ราคา
+'''
+
 #function to handle message
 def handleFacebookMessage(sender_id, received_message):
     if 'text' in received_message:

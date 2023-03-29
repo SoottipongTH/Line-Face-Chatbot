@@ -48,24 +48,32 @@
 from pythainlp import word_tokenize
 from pythainlp.util.trie import Trie
 from data import find_data
+import json
+from pathlib import Path
 
 
 #todo
-product = []
-with open('product.txt', 'r',encoding='utf-8') as f:
-    lines = f.readlines()
-    for line in lines:
-        product.append(line.strip())
+# with open('product.txt', 'r',encoding='utf-8') as f:
+#     lines = f.readlines()
+#     for line in lines:
+#         product.append(line.strip())
 #todo
-    
+with open(Path("product.json"), "r", encoding="utf-8") as f:
+    products = json.load(f)
 
-trie = Trie(product)
+product_list = []
+
+for product in products['new-product']:
+    for i in product['name']:
+        product_list.append(i)
+
+trie = Trie(product_list)
 
 
 def process(user_input):
     tokens = word_tokenize(user_input,custom_dict=trie, engine="newmm")
     for token in tokens:
-        if token in product:
+        if token in product_list:
             data = find_data(token)
             return data
         else:
@@ -75,64 +83,20 @@ def process(user_input):
 
 
 
-# print(process("น้ำพริกกุ้ง"))
-
-
-
 def response(user_input):
     data = process(user_input)
-
+    return_data = 'ชื่อสินค้า : {}\n'.format(data['name'][0])
     if type(data) == dict:
-        return_data = {
-            "ชื่อสินค้า": data['name'][0],
-            "ปริมาณ": data['quantity'],
-            "ราคา" : data['price']
-        }
-        return return_data
+        if 'alter' in data:
+            for alter in data['alter']:
+                return_data += 'ปริมาณ : {} ราคา : {}\n'.format(alter['description'],alter['price']) 
+            return return_data   
+        else:
+            return 'ชื่อสินค้า : {}\nปริมาณ : {} \nราคา : {}'.format(data['name'][0],data['description'],data['price'])
     else:
         return data
-
-# print(response("น้ำพริกกุ้ง"))    
-
-# ชื่อสินค้า: Name
-# ราคา: Price
-# ขนาด: quantity
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def find_product(input_str):
-#     for i in product:
-#         if i in input_str: 
-#             product_name = i
-#         else:
-#             return False
-#         return product_name
-
-# def clean(input_str):
-    
-
-
-
-
-
-
-
-
-
-
-
-
+print(response("ข้าวเนียว"))
 
 
 
