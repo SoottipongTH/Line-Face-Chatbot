@@ -1,4 +1,4 @@
-from Model.sequential import tensor_model,create_bag_of_words
+from sequential import sequential_model,create_bag_of_words
 
-tensor_model()
+sequential_model()
 create_bag_of_words()

@@ -1,63 +1,26 @@
-# from pathlib import Path
-# import pickle
-# import json
-
-# import numpy as np
-# from pythainlp import word_tokenize
-# import keras
-# from data import find_data
-
-# model_path = Path("model")
-# data_path = Path("data.pickle")
-# intents_path = Path("intents.json")
-
-
-# with open(intents_path, "r", encoding="utf-8") as f:
-#     intents = json.load(f)
-
-# model = keras.models.load_model(model_path)
-
-# with open(data_path, "rb") as file:
-#     words, labels, training, output = pickle.load(file)
-
-
-
-
-# context = {}
-
-
-# def chat(user_input, userID):
-#     results = model.predict(clean(user_input))
-#     results_index = np.argmax(results)
-#     tag = labels[results_index]
-    
-#     for i in intents['intents']:
-#         if tag == i['tag']:
-#             if 'context_set' in i:
-#                 context[userID] = i['context_set']
-#             if not 'context_filter' in i or \
-#                     (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
-#                 response = find_data(tag)
-#                 print(context)
-#                 return response
-            
-
-# print(chat("นมข้าวโพดไหม", 123))
-
-
 from pythainlp import word_tokenize
 from pythainlp.util.trie import Trie
 from data import find_data
 import json
 from pathlib import Path
+import keras
+import numpy as np
+import pickle
+import random
+
+model_path = Path("Model/evaluate/sequential")
+data_path = Path("data.pickle")
+intents_path = Path("newIntents.json")
 
 
-#todo
-# with open('product.txt', 'r',encoding='utf-8') as f:
-#     lines = f.readlines()
-#     for line in lines:
-#         product.append(line.strip())
-#todo
+with open(intents_path, "r", encoding="utf-8") as f:
+    intents = json.load(f)
+
+model = keras.models.load_model(model_path)
+
+with open(data_path, "rb") as file:
+    words, labels, training, output = pickle.load(file)
+
 with open(Path("product.json"), "r", encoding="utf-8") as f:
     products = json.load(f)
 
@@ -71,39 +34,62 @@ trie = Trie(product_list)
 
 
 def process(user_input):
-    tokens = word_tokenize(user_input,custom_dict=trie, engine="newmm")
+    tokens = word_tokenize(user_input,custom_dict=trie, engine="deepcut",keep_whitespace=False)
     for token in tokens:
         if token in product_list:
             data = find_data(token)
             return data
-        else:
-            data = "ไม่พบสินค้าที่ท่านต้องการ"
-            return data
+    else:
+        bag = [0]*len(words)
+        for stem in tokens:
+            for i, w in enumerate(words):
+                if w == stem:
+                    bag[i] = 1
+        return np.array([bag])
+        
 
-
-
-
-def response(user_input):
+def response(user_input,userID):  
     data = process(user_input)
-    return_data = 'ชื่อสินค้า : {}\n'.format(data['name'][0])
     if type(data) == dict:
+        return_data = 'ชื่อสินค้า : {}\n'.format(data['name'][0])
         if 'alter' in data:
             for alter in data['alter']:
                 return_data += 'ปริมาณ : {} ราคา : {}\n'.format(alter['description'],alter['price']) 
             return return_data   
         else:
             return 'ชื่อสินค้า : {}\nปริมาณ : {} \nราคา : {}'.format(data['name'][0],data['description'],data['price'])
+
     else:
-        return data
+        res = predict(user_input,userID)
+        return res
     
-print(response("ข้าวเนียว"))
+context = {}
 
+def predict(user_input,userID):
+    results = model.predict(process(user_input))
+    results_index = np.argmax(results)
+    tag = labels[results_index]
+    context[userID] = 'bot'
+    print(results[0, results_index])
+    for i in intents['intents']:
+        if tag == i['tag']:
+            if 'context_set' in i:
+                context[userID] = i['context_set']
+            if not 'context_filter' in i or \
+                    (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
+                    response = random.choice(i['response'])
+                    if type(response) == None:
+                        return False
+                    return response
+        # else:
+        #     return "ไม่เข้าใจ"
+            
 
+            
+            
 
 # while(True):
-#     user_input = input("You : ")
-    
+#     user_input = input("enter message : ")
 #     if user_input == "exit":
 #         break
-
-#     print(find_product(user_input))
+#     print(response(user_input,userID="123"))

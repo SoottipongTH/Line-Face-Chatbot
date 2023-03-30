@@ -50,15 +50,17 @@ def lineMsgAPI(reply_token, reply_message):
 def handleFacebookMessage(sender_id, received_message):
     if 'text' in received_message:
         text = received_message['text']
-        response_msg = response(text)
+        response_msg = response(text,sender_id)
         msg_to_send = {"text": str(response_msg) }
         graphAPI(sender_id, msg_to_send)
 
 def handleLineMessage(sender_id, received_message, reply_token):
     if type(received_message) == str:
-        response_msg = response(received_message)
-        msg_to_send = response_msg
-        lineMsgAPI(reply_token, msg_to_send)
+        response_msg = response(received_message,sender_id)
+        # print("msg_type {}".format(type(response_msg)))
+        if response_msg:
+            msg_to_send = response_msg
+            lineMsgAPI(reply_token, msg_to_send)
 
 
 
