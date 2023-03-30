@@ -31,10 +31,11 @@ for product in products['new-product']:
         product_list.append(i)
 
 trie = Trie(product_list)
-
+context = {}
 
 def process(user_input):
-    tokens = word_tokenize(user_input,custom_dict=trie, engine="deepcut",keep_whitespace=False)
+    tokens = word_tokenize(user_input, custom_dict=trie,
+                           engine="deepcut", keep_whitespace=False)
     for token in tokens:
         if token in product_list:
             data = find_data(token)
@@ -46,50 +47,59 @@ def process(user_input):
                 if w == stem:
                     bag[i] = 1
         return np.array([bag])
-        
 
-def response(user_input,userID):  
+
+def response(user_input, userID):
     data = process(user_input)
+    print(context)
+    
+
     if type(data) == dict:
+        if context[userID] == 'admin':
+            return False
         return_data = 'ชื่อสินค้า : {}\n'.format(data['name'][0])
         if 'alter' in data:
             for alter in data['alter']:
-                return_data += 'ปริมาณ : {} ราคา : {}\n'.format(alter['description'],alter['price']) 
-            return return_data   
+                return_data += 'ปริมาณ : {} ราคา : {}\n'.format(
+                    alter['description'], alter['price'])
+            return return_data
         else:
-            return 'ชื่อสินค้า : {}\nปริมาณ : {} \nราคา : {}'.format(data['name'][0],data['description'],data['price'])
+            return 'ชื่อสินค้า : {}\nปริมาณ : {} \nราคา : {}'.format(data['name'][0], data['description'], data['price'])
 
     else:
-        res = predict(user_input,userID)
+        res = predict(user_input, userID)
         return res
-    
-context = {}
 
-def predict(user_input,userID):
+
+def predict(user_input, userID):
     results = model.predict(process(user_input))
     results_index = np.argmax(results)
     tag = labels[results_index]
-    context[userID] = 'bot'
+    if userID not in context:
+        print("enter bot context init")
+        context[userID] = 'bot'
+    print(context)
     print(results[0, results_index])
+
     for i in intents['intents']:
         if tag == i['tag']:
             if 'context_set' in i:
+                print("context changed")
                 context[userID] = i['context_set']
             if not 'context_filter' in i or \
                     (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
-                    response = random.choice(i['response'])
-                    if type(response) == None:
-                        return False
+                response = random.choice(i['response'])
+                print(context)
+                if type(response) == None:
+                    return False
+                if results[0, results_index] >= 0.5:
                     return response
-        # else:
-        #     return "ไม่เข้าใจ"
-            
+                else:
+                    return "ไม่เข้าใจ"
 
-            
-            
 
-# while(True):
-#     user_input = input("enter message : ")
-#     if user_input == "exit":
-#         break
-#     print(response(user_input,userID="123"))
+while (True):
+    user_input = input("enter message : ")
+    if user_input == "exit":
+        break
+    print(response(user_input, userID="123"))
