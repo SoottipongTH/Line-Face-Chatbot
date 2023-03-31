@@ -50,7 +50,7 @@ def process(user_input):
 
 def context_initializer(userID):
     if userID not in context:
-        # print("enter bot context init")
+        print("enter bot context init")
         context[userID] = 'bot'
 
 
@@ -81,36 +81,33 @@ def predict(user_input, userID):
     results_index = np.argmax(results)
     tag = labels[results_index]
     context_initializer(userID)
-    print("init context", context)
-    print(tag)
-    print(results[0, results_index])
+    
+    print("tag = ", tag)
+    print("Prob = ",results[0, results_index])
 
     for i in intents['intents']:            
         if tag == i['tag']:
-            if (context[userID] == 'admin' and 'context_set' in i):
+            if (context[userID] == 'admin'):
                 print("context[userID] = ", context[userID])
-                print(i['context_set'])
-                if (i['context_set'] != 'bot'):           
-                    print("context after predict = ", i['context_set'])
-                    print("enter mode change")
+                if ('context_filter' in i):           
                     return None
-            if 'context_set' in i:
-                # print("context changed")
-                context[userID] = i['context_set']
-            if not 'context_filter' in i or \
-                    (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
-                response = random.choice(i['response'])
-                print("context in same tag = ", context)
-                if type(response) == None:
-                    return False
-                if results[0, results_index] >= 0.5:
+                if ('context_set' in i):
+                    if i['context_set'] != 'bot':
+                        return None
+                
+            if results[0, results_index] >= 0.5:
+                if 'context_set' in i:
+                    context[userID] = i['context_set']
+                if not 'context_filter' in i or \
+                        (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
+                    response = random.choice(i['response'])
                     return response
-                else:
-                    return "ขอโทษครับ ไม่เข้าใจคำถาม หากต้องการติดต่อแอดมิน สามารถพิมพ์ 'แอดมิน' ได้เลยครับ"
+            else:
+                return "ขอโทษครับ ไม่เข้าใจคำถาม หากต้องการติดต่อแอดมิน สามารถพิมพ์ 'แอดมิน' ได้เลยครับ"
 
 
-while (True):
-    user_input = input("enter message : ")
-    if user_input == "exit":
-        break
-    print(response(user_input, userID="123"))
+# while (True):
+#     user_input = input("enter message : ")
+#     if user_input == "exit":
+#         break
+#     print(response(user_input, userID="current_context"))
