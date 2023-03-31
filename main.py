@@ -48,15 +48,20 @@ def process(user_input):
                     bag[i] = 1
         return np.array([bag])
 
+def context_initializer(userID):
+    if userID not in context:
+        print("enter bot context init")
+        context[userID] = 'bot'
+
 
 def response(user_input, userID):
     data = process(user_input)
-    print(context)
+    context_initializer(userID)
     
 
     if type(data) == dict:
         if context[userID] == 'admin':
-            return False
+            return None
         return_data = 'ชื่อสินค้า : {}\n'.format(data['name'][0])
         if 'alter' in data:
             for alter in data['alter']:
@@ -75,12 +80,9 @@ def predict(user_input, userID):
     results = model.predict(process(user_input))
     results_index = np.argmax(results)
     tag = labels[results_index]
-    if userID not in context:
-        print("enter bot context init")
-        context[userID] = 'bot'
+    context_initializer(userID)
     print(context)
     print(results[0, results_index])
-
     for i in intents['intents']:
         if tag == i['tag']:
             if 'context_set' in i:
@@ -95,7 +97,7 @@ def predict(user_input, userID):
                 if results[0, results_index] >= 0.5:
                     return response
                 else:
-                    return "ไม่เข้าใจ"
+                    return "ขอโทษครับ ไม่เข้าใจคำถาม หากต้องการติดต่อแอดมิน สามารถพิมพ์ 'แอดมิน' ได้เลยครับ"
 
 
 while (True):
