@@ -26,7 +26,7 @@ def sequential_model():
     model.add(Dense(len((output[0])), activation="softmax"))
     
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    history = model.fit(training,output, epochs=80, batch_size=8)
+    history = model.fit(training,output, epochs=200, batch_size=8)
     
      # accuracy and epoch
     plt.plot(history.history["accuracy"])

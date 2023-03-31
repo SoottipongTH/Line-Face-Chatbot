@@ -81,17 +81,26 @@ def predict(user_input, userID):
     results_index = np.argmax(results)
     tag = labels[results_index]
     context_initializer(userID)
-    # print(context)
-    # print(results[0, results_index])
-    for i in intents['intents']:
+    print("init context", context)
+    print(tag)
+    print(results[0, results_index])
+
+    for i in intents['intents']:            
         if tag == i['tag']:
+            if (context[userID] == 'admin' and 'context_set' in i):
+                print("context[userID] = ", context[userID])
+                print(i['context_set'])
+                if (i['context_set'] != 'bot'):           
+                    print("context after predict = ", i['context_set'])
+                    print("enter mode change")
+                    return None
             if 'context_set' in i:
                 # print("context changed")
                 context[userID] = i['context_set']
             if not 'context_filter' in i or \
                     (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
                 response = random.choice(i['response'])
-                # print(context)
+                print("context in same tag = ", context)
                 if type(response) == None:
                     return False
                 if results[0, results_index] >= 0.5:
