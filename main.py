@@ -95,7 +95,7 @@ def predict(user_input, userID):
                     if i['context_set'] != 'bot':
                         return None
                 
-            if results[0, results_index] >= 0.5:
+            if results[0, results_index] >= 0.55:
                 if 'context_set' in i:
                     context[userID] = i['context_set']
                 if not 'context_filter' in i or \
@@ -106,8 +106,8 @@ def predict(user_input, userID):
                 return "ขอโทษครับ ไม่เข้าใจคำถาม หากต้องการติดต่อแอดมิน สามารถพิมพ์ 'แอดมิน' ได้เลยครับ"
 
 
-# while (True):
-#     user_input = input("enter message : ")
-#     if user_input == "exit":
-#         break
-#     print(response(user_input, userID="current_context"))
+while (True):
+    user_input = input("enter message : ")
+    if user_input == "exit":
+        break
+    print(response(user_input, userID="current_context"))

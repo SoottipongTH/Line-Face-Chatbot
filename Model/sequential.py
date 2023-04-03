@@ -9,7 +9,6 @@ from matplotlib import pyplot as plt
 
 import json
 import numpy as np
-import pandas as pd
 
 def sequential_model():
     data_path = Path("../data.pickle")
@@ -26,7 +25,7 @@ def sequential_model():
     model.add(Dense(len((output[0])), activation="softmax"))
     
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    history = model.fit(training,output, epochs=60, batch_size=8)
+    history = model.fit(training,output, epochs=120, batch_size=8)
     
      # accuracy and epoch
     plt.plot(history.history["accuracy"])
@@ -59,23 +58,29 @@ def create_bag_of_words():
     docs_y = []
     
     for intent in data["intents"]:
+        print(intent)
         for pattern in intent["patterns"]:
+            print(pattern)
             tokens = word_tokenize(pattern.lower(), engine="deepcut", keep_whitespace=False)
-            words.extend(tokens)
+            for token in tokens:
+                if token not in words:
+                    words.append(token)
             docs_x.append(tokens)
-            
             docs_y.append(intent["tag"])
             
         if intent["tag"] not in labels:
             labels.append(intent["tag"])
             
-    print(docs_x)
-    print(words)
+  
 
     words = sorted(list(set(words)))
-    
 
     labels = sorted(labels)
+
+    print(docs_x)
+    print("--------------------")
+    print(words,"length", len(words))
+    print(labels)
 
     training = []
     output = []
