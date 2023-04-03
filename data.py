@@ -17,9 +17,6 @@ def find_data(product_name):
 
 # print(find_data("น้ำพริกกุ้ง"))
 
-
-
-
 json_file = open("product.json", 'r', encoding='utf-8')
 json_data = json.load(json_file)
 # for i in json_data['new-product']:
