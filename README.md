@@ -1,2 +1,2 @@
-# Project-chatbot
+# Line and Facebook Chatbot
 Final Term Project
